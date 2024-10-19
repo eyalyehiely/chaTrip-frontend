@@ -70,13 +70,8 @@ export default function LoginPage() {
     try {
       const data = await verifyOtp(email, otp);
       setMessage({ type: 'success', content: data.detail || 'Verification successful!' });
-      console.log('Verification successful:', data);
+      console.log('Verification successful:', data.status);
       
-      // Example: Save token and redirect
-      if (data.token) {
-        localStorage.setItem('authToken', data.token);
-        router.push('/'); // Redirect to dashboard or desired page
-      }
     } catch (error: any) {
       // Parse the error message
       if (error.message.startsWith('Error')) {

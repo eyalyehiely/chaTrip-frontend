@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Utensils, Hotel, Camera } from 'lucide-react';
+import checkToken from '../utils/checkToken'
 
 const categories = [
   { name: 'Attractions', icon: Camera },
@@ -12,6 +13,7 @@ const categories = [
 ];
 
 export default function ExplorePage() {
+  checkToken()
   const [selectedCategory, setSelectedCategory] = useState('');
   const [places, setPlaces] = useState([]);
 
