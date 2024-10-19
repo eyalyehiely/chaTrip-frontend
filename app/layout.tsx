@@ -9,7 +9,7 @@ import Footer from '@/components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Tourist Guide App',
+  title: 'ChaTrip',
   description: 'Your personal guide for exploring new places',
 };
 

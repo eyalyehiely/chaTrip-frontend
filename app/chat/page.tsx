@@ -25,7 +25,7 @@ export default function ChatPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Chat with AI Tourist Guide</h1>
+      <h1 className="text-3xl font-bold mb-6">Chat with AI ChaTrip</h1>
       <div className="bg-card rounded-lg shadow-lg p-4 h-[600px] flex flex-col">
         <ScrollArea className="flex-grow mb-4">
           {messages.map((msg, index) => (
