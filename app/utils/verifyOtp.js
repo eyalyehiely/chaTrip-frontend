@@ -10,14 +10,23 @@ export default async function verifyOtp(email, otp) {
         },
       }
     );
-    return { success: true, status: response.status, data: response.data };
-  } catch (error) {
-    if (error.response) {
-      // Django returned an error response
-      return { success: false, status: error.response.status, data: error.response.data };
+    console.log('Response Status:', response.status); // Correct logging of the status
+
+    if (response.status === 200) {
+      localStorage.setItem('authToken', response.data.access); // Ensure the token path is correct
+      console.log('Token:', response.data.access);
+      window.location.href = '/'; // Redirect on success
+
+      return { success: true, status: response.status, data: response.data };
     } else {
-      // Network or other errors
-      return { success: false, status: 500, data: { detail: 'Internal Server Error' } };
+      return { success: false, status: response.status, data: response.data };
     }
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    return {
+      success: false,
+      status: error.response ? error.response.status : 500,
+      data: error.response ? error.response.data : { detail: 'Internal Server Error' }
+    };
   }
 }
