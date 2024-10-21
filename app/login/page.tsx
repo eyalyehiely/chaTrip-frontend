@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import sendOtp from '../utils/sendOtp';
-import verifyOtp from '../utils/verifyOtp';
+import sendOtp from '../utils/auth/sendOtp';
+import verifyOtp from '../utils/auth/verifyOtp';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');

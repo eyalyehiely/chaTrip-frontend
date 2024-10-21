@@ -7,8 +7,8 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Utensils, Hotel, Camera, Star, Bookmark, ExternalLink } from 'lucide-react'; // Import icons
-import checkToken from '../utils/checkToken';
-import { fetchNearbyPlaces } from '../utils/fetchNearbyPlaces';  // Import the Axios function
+import checkToken from '../utils/config/checkToken';
+import { fetchNearbyPlaces } from '../utils/api/fetchNearbyPlaces';  // Import the Axios function
 
 const categories = [
   { name: 'Attractions', icon: Camera },

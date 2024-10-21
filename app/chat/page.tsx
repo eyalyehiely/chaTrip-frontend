@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import checkToken from '../utils/checkToken';
+import checkToken from '../utils/config/checkToken';
 
 export default function ChatPage() {
   checkToken()
