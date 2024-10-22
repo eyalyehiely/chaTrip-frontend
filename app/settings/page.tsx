@@ -8,6 +8,7 @@ import checkToken from '../utils/config/checkToken';
 import getUserDetails from '../utils/api/getUserDetails'
 import jwt from "jsonwebtoken"; 
 import deleteUser from '../utils/api/deleteUser';
+import sendContactUsMail from '../utils/api/sendContactUsMail'
 
 
 export default function SettingsPage() {
@@ -15,6 +16,7 @@ export default function SettingsPage() {
   const [username, setUsername] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [contactMessage, setContactMessage] = useState('');
+  const [contactSubject, setContactSubject] =useState('');
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState({}); // Initial state as null for better handling
@@ -41,8 +43,8 @@ export default function SettingsPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      // Here you would make an API call to send the contact message
-      console.log('Message sent:', contactMessage);
+      sendContactUsMail(contactMessage,contactSubject, token)
+      console.log('Message sent:', contactMessage, 'subject', contactSubject);
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
@@ -82,7 +84,7 @@ export default function SettingsPage() {
             type="text"
             value={user.username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your username"
+            // placeholder="Enter your username"
             className="w-full"
           />
           <Button className="mt-4">Update Username</Button>
@@ -105,6 +107,13 @@ export default function SettingsPage() {
         <div className="bg-background p-6 rounded-lg shadow-lg md:col-span-2">
           <h2 className="text-xl font-bold mb-4">Contact Us</h2>
           <form onSubmit={handleContactSubmit}>
+            <Input
+              value={contactSubject}
+              onChange={(e) => setContactSubject(e.target.value)}
+              placeholder="Write your subject here"
+              className="w-full"
+            />
+            <br />
             <Textarea
               value={contactMessage}
               onChange={(e) => setContactMessage(e.target.value)}
