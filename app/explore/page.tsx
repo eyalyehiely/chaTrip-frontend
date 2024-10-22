@@ -1,14 +1,15 @@
 
-
-
 "use client";
 
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Utensils, Hotel, Camera, Star, Bookmark, ExternalLink } from 'lucide-react'; // Import icons
+import { MapPin, Utensils, Hotel, Camera, Star, Bookmark, ExternalLink,Clock12Icon} from 'lucide-react'; // Import icons
 import checkToken from '../utils/config/checkToken';
 import { fetchNearbyPlaces } from '../utils/api/fetchNearbyPlaces';  // Import the Axios function
+import { updateUserSavings } from '../utils/api/updateUserSavings';  // Import the function
+import jwt from "jsonwebtoken";
+import React from 'react';  // Import React for creating elements dynamically
 
 const categories = [
   { name: 'Attractions', icon: Camera },
@@ -18,7 +19,6 @@ const categories = [
 
 export default function ExplorePage() {
   checkToken();
-  // Initialize state variables
   const [selectedCategory, setSelectedCategory] = useState('');
   const [places, setPlaces] = useState([]);
   const [userLocation, setUserLocation] = useState(null);  // Store user's location
@@ -90,10 +90,23 @@ export default function ExplorePage() {
     }
   };
 
-  // Function to handle saving a place (just a placeholder here)
-  const handleSavePlace = (place) => {
-    console.log(`Saved place: ${place.name}`);
-    // Add functionality to save the place (e.g., API call to save the place)
+  // Function to handle saving a place
+  const handleSavePlace = async (place) => {
+    try {
+      const storedToken = localStorage.getItem('authToken');
+      const decodedToken = jwt.decode(storedToken) as any;
+      const user_id = decodedToken?.user_id; 
+      if (!token) {
+        setError('You must be logged in to save places.');
+        return;
+      }
+
+      // Call the updateUserSavings function to save the place
+      await updateUserSavings(token, place, user_id);
+      console.log('Place saved successfully.', place);
+    } catch (error) {
+      console.error('Error saving place:', error);
+    }
   };
 
   // Function to open a place's location in Google Maps
@@ -116,53 +129,64 @@ export default function ExplorePage() {
             variant={selectedCategory === category.name ? "default" : "outline"}
             disabled={!userLocation || loading}  // Disable button if location is not available or while loading
           >
-            <category.icon className="mr-2 h-4 w-4" />
+            {React.createElement(category.icon, { className: "mr-2 h-4 w-4" })}  {/* Correctly render the icon */}
             {category.name}
           </Button>
         ))}
       </div>
 
       {loading && <p>Loading places...</p>}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {places.length > 0 ? (
-          places.map((place, index) => (
-            <Card key={place.id || index}>
-              <CardHeader>
-                <CardTitle>{place.name}</CardTitle>
-                <CardDescription className="flex items-center">
-                  <MapPin className="inline-block mr-1 h-4 w-4" />
-                  {place.distance ? `${place.distance} km away` : 'Nearby'}
-                </CardDescription>
-                <CardDescription className="flex items-center">
-                  <Star className="inline-block mr-1 h-4 w-4" />
-                  {place.rating || 'No rating available'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>{place.description || 'No description available'}</p>
-                <div className="mt-4 flex space-x-4">
-                  <Button variant="outline" onClick={() => handleSavePlace(place)}>
-                    <Bookmark className="mr-2 h-4 w-4" />
-                    Save
-                  </Button>
-                  {/* Ensure location data exists before rendering the open location button */}
-                  <Button
-                    variant="outline"
-                    onClick={() => handleOpenLocation(place.location?.lat, place.location?.lng)}
-                    disabled={!place.location || !place.location.lat || !place.location.lng}  // Disable if location is missing
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Open Location
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          !loading && <p>No places found.</p>
-        )}
-      </div>
+          {console.log('places',places)}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {places.length > 0 ? (
+            <>
+              <h1>Presenting {places.length} places</h1>
+              {places.map((place, index) => (
+                <Card key={place.id || index}>
+                  <CardHeader>
+                    <CardTitle>{place.name}</CardTitle>
+                    <CardDescription className="flex items-center">
+                      <MapPin className="inline-block mr-1 h-4 w-4" />
+                      {place.distance ? `${place.distance} km away` : 'Nearby'}
+                    </CardDescription>
+                    <CardDescription className="flex items-center">
+                      <Star className="inline-block mr-1 h-4 w-4" />
+                      {place.rating || 'No rating available'}
+                      <span
+                        className={`inline-block ml-2 px-2 py-1 rounded-lg font-bold 
+                          ${place.opening_hours ? 'bg-green-500 text-white' : 
+                          place.opening_hours === false ? 'bg-red-500 text-white' : 
+                          'bg-gray-500 text-white'}`}>
+                        {place.opening_hours ? 'OPEN' : 
+                        place.opening_hours === false ? 'CLOSE' : 
+                        'No hours available'}
+                      </span>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Type: {place.type || 'No description available'}</p>
+                    <div className="mt-4 flex space-x-4">
+                      <Button variant="outline" onClick={() => handleSavePlace(place)}>
+                        <Bookmark className="mr-2 h-4 w-4" />
+                        Save
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => handleOpenLocation(place.location?.lat, place.location?.lng)}
+                        disabled={!place.location || !place.location.lat || !place.location.lng}  // Disable if location is missing
+                      >
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Open Location
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </>
+  ) : (
+    !loading && <p>No places found.</p>
+  )}
+</div>
     </div>
   );
 }
