@@ -60,7 +60,7 @@ export default function Faqs() {
 
   return (
     <div className="mt-12">
-      <h2 className="text-3xl font-bold mb-6">Frequently Asked Questions</h2>
+      <h2 className="text-3xl font-bold mb-6">FAQs:</h2>
       {faqs.map((faq, index) => (
         <FAQItem
           key={index}
