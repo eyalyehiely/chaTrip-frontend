@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { MoonIcon, SunIcon, Settings, Bookmark, LogOut, Menu } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import getUserDetails from '../app/utils/api/getUserDetails';
+import getUserDetails from '../app/utils/api/user/getUserDetails';
 import jwt from "jsonwebtoken";
 import Sidebar from './Sidebar';
 
