@@ -2,13 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import getUserDetails from './utils/api/getUserDetails';
+import getUserDetails from './utils/api/user/getUserDetails';
 import { useEffect, useState } from "react";
 import jwt from "jsonwebtoken"; // Import jsonwebtoken
 import { Telescope, MessageSquare } from 'lucide-react';
 import FAQs from '@/components/Faqs'; // Import the FAQ component
+import checkToken from "./utils/api/config/checkToken";
 
 export default function Home() {
+  checkToken()
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
 

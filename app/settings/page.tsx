@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import checkToken from '../utils/config/checkToken';
-import getUserDetails from '../utils/api/getUserDetails'
+import getUserDetails from '../utils/api/user/getUserDetails'
 import jwt from "jsonwebtoken"; 
-import deleteUser from '../utils/api/deleteUser';
-import sendContactUsMail from '../utils/api/sendContactUsMail'
+import deleteUser from '../utils/api/user/deleteUser';
+import sendContactUsMail from '../utils/api/mail/sendContactUsMail'
 
 
 export default function SettingsPage() {

@@ -1,8 +1,8 @@
 
 "use client";
 import { useEffect, useState } from 'react';
-import fetchUserConversations from '../app/utils/api/fetchUserConversations';
-import getConversationById from '../app/utils/api/getConversationById'
+import fetchUserConversations from '../app/utils/api/conversations/fetchUserConversations';
+import getConversationById from '../app/utils/api/conversations/getConversationById'
 import { UUID } from 'crypto';
 
 interface SidebarProps {

@@ -1,5 +1,5 @@
 // API to end and save the conversation
-import axios from '../config/axiosConfig';  // Import the configured Axios instance
+import axios from '../../config/axiosConfig';  // Import the configured Axios instance
 
 export const endConversation = async () => {
     const token = localStorage.getItem('authToken');
