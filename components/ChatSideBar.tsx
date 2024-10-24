@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useRef } from 'react';
 import fetchUserConversations from '../app/utils/api/conversations/fetchUserConversations';
 import getConversationById from '../app/utils/api/conversations/getConversationById';
 import { UUID } from 'crypto';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -13,6 +14,7 @@ interface SidebarProps {
 export default function ChatSidebar({ sidebarOpen, setSidebarOpen, onConversationSelect }: SidebarProps) {
   const [conversations, setConversations] = useState([]);  // Initialize as an array
   const token = localStorage.getItem('authToken');
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (token) {
@@ -43,7 +45,9 @@ export default function ChatSidebar({ sidebarOpen, setSidebarOpen, onConversatio
       >
         <nav className="mt-8 p-4">
           <h2 className="text-xl font-bold mb-4">Your Conversations</h2>
-          <ul className="space-y-4">
+          <ScrollArea className="flex-grow mb-4" ref={scrollRef}>
+            <ul className="space-y-4">
+
             {conversations.length > 0 ? (
               conversations.map((conversation: any, index: number) => (
                 <li
@@ -57,7 +61,8 @@ export default function ChatSidebar({ sidebarOpen, setSidebarOpen, onConversatio
             ) : (
               <li className="text-gray-500">No conversations found</li>
             )}
-          </ul>
+            </ul>
+          </ScrollArea>
         </nav>
       </div>
 
