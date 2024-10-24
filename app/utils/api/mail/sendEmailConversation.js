@@ -24,17 +24,15 @@ export default function sendEmailConversation(conversationId, token) {
   })
   .then(response => {
     if (response.status === 200) {
-      // Show success message and refresh the page
+      // Show success message
       swal.fire({
         title: 'Message sent successfully!',
         icon: 'success',
         timer: 1000,
-      }).then(() => {
-        window.location.reload(); // Optionally reload the page after successful email send
       });
     } else {
       // Handle unexpected responses
-      const errorMessage = response.data.error || 'An unexpected error occurred';
+      const errorMessage = response.data?.error || 'An unexpected error occurred';
       swal.fire({
         title: 'Error',
         text: errorMessage,
@@ -45,7 +43,7 @@ export default function sendEmailConversation(conversationId, token) {
   })
   .catch(error => {
     // Handle errors from the API
-    const errorMessage = error.response?.data?.error || 'An unexpected error occurred';
+    const errorMessage = error.response?.data?.error || 'Failed to send the conversation. Please try again later.';
     console.error('There was an error sending the email:', errorMessage);
     swal.fire({
       title: 'Error',
