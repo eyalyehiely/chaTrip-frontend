@@ -1,13 +1,14 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Bookmark, Trash2, ExternalLink } from 'lucide-react'; // Import icons
+import { MapPin, Star, ExternalLink, Trash2 } from 'lucide-react'; // Import icons
 import checkToken from '../utils/config/checkToken';
-import getUserDetails from '../utils/api/getUserDetails';
+import getUserDetails from '../utils/api/user/getUserDetails';
 import jwt from "jsonwebtoken";
-import deleteSavingPlace from '../utils/api/deleteSavingPlace';
+import deleteSavingPlace from '../utils/api/places/deleteSavingPlace';
 
 export default function SavingsPage() {
   checkToken();
@@ -69,10 +70,16 @@ export default function SavingsPage() {
   };
 
   // Handle opening location in Google Maps
-  const handleOpenLocation = (lat, lng) => {
+  const handleGoogleOpenLocation = (lat, lng) => {
     const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
     window.open(googleMapsUrl, '_blank'); // Opens the location in a new tab
   };
+
+  // Handle opening location in Apple Maps
+const handleAppleOpenLocation = (lat, lng) => {
+  const appleMapsUrl = `https://maps.apple.com/?ll=${lat},${lng}`;
+  window.open(appleMapsUrl, '_blank'); // Opens the location in a new tab
+};
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -97,18 +104,44 @@ export default function SavingsPage() {
             <Card key={index}>
               <CardHeader>
                 <CardTitle>{place.name}</CardTitle>
-                <CardDescription>{place.description}</CardDescription>
+                <CardDescription className="flex items-center">
+                  <MapPin className="inline-block mr-1 h-4 w-4" />
+                  {place.distance ? `${place.distance} km away` : 'Nearby'}
+                </CardDescription>
+                <CardDescription className="flex items-center">
+                  <Star className="inline-block mr-1 h-4 w-4" />
+                  {place.rating || 'No rating available'}
+                  <span
+                    className={`inline-block ml-2 px-2 py-1 rounded-lg font-bold 
+                      ${place.opening_hours ? 'bg-green-500 text-white' : 
+                      place.opening_hours === false ? 'bg-red-500 text-white' : 
+                      'bg-gray-500 text-white'}`}>
+                    {place.opening_hours ? 'OPEN' : 
+                    place.opening_hours === false ? 'CLOSE' : 
+                    'No hours available'}
+                  </span>
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex justify-between items-center">
                   <Button
                     variant="outline"
-                    onClick={() => handleOpenLocation(place.location?.lat, place.location?.lng)}
+                    onClick={() => handleGoogleOpenLocation(place.location?.lat, place.location?.lng)}
                     disabled={!place.location || !place.location.lat || !place.location.lng} // Disable if location is missing
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
                     Open Location
                   </Button>
+                  
+
+                  {/* <Button
+                    variant="outline"
+                    onClick={() => handleAppleOpenLocation(place.location?.lat, place.location?.lng)}
+                    disabled={!place.location || !place.location.lat || !place.location.lng} // Disable if location is missing
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Open Location
+                  </Button> */}
                   <Button variant="destructive" size="sm" onClick={() => handleDelete(place.id)}>
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete
@@ -124,3 +157,5 @@ export default function SavingsPage() {
     </div>
   );
 }
+
+
