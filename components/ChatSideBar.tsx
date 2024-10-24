@@ -1,8 +1,7 @@
-
 "use client";
 import { useEffect, useState } from 'react';
 import fetchUserConversations from '../app/utils/api/conversations/fetchUserConversations';
-import getConversationById from '../app/utils/api/conversations/getConversationById'
+import getConversationById from '../app/utils/api/conversations/getConversationById';
 import { UUID } from 'crypto';
 
 interface SidebarProps {
@@ -26,8 +25,9 @@ export default function ChatSidebar({ sidebarOpen, setSidebarOpen, onConversatio
     if (token) {
       try {
         const conversation = await getConversationById(conversationId, token);
-        onConversationSelect(conversation);  // Pass the conversation data to the parent component
-        setSidebarOpen(false);  // Optionally close the sidebar on selection
+        console.log('Fetched Conversation Data:', conversation);  // Log the conversation
+        onConversationSelect(conversation);  // Pass the conversation to the parent
+        setSidebarOpen(false);  // Optionally close the sidebar
       } catch (error) {
         console.error('Error loading conversation:', error);
       }
@@ -39,10 +39,10 @@ export default function ChatSidebar({ sidebarOpen, setSidebarOpen, onConversatio
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 z-50 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 md:relative md:flex`}
+        }`} 
       >
         <nav className="mt-8 p-4">
-          <h2 className="text-xl font-bold mb-4">Conversations</h2>
+          <h2 className="text-xl font-bold mb-4">Your Conversations</h2>
           <ul className="space-y-4">
             {conversations.length > 0 ? (
               conversations.map((conversation: any, index: number) => (
