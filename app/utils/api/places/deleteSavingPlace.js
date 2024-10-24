@@ -1,4 +1,4 @@
-import axios from '../../config/axiosConfig';
+import axios from '../config/axiosConfig';
 import Swal from 'sweetalert2';
 
 export default async function deleteSavingPlace(token, user, setUser, placeId) {

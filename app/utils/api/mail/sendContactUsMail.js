@@ -1,4 +1,4 @@
-import axios from '../../config/axiosConfig';
+import axios from '../../api/config/axiosConfig';
 import swal from 'sweetalert2';
 
 export default function sendContactUsMail(contactMessage, contactSubject, token) {
