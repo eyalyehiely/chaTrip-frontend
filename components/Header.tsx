@@ -116,6 +116,13 @@ export default function Header() {
             <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
               <Menu />
             </Button>
+
+            {/* {dropdownOpen && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+                onClick={() => setSidebarOpen(false)}
+              />
+            )} */}
           </div>
         </div>
       </header>
