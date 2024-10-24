@@ -4,7 +4,7 @@ import { useState,useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import checkToken from '../utils/config/checkToken';
+import checkToken from '../utils/api/config/checkToken';
 import getUserDetails from '../utils/api/user/getUserDetails'
 import jwt from "jsonwebtoken"; 
 import deleteUser from '../utils/api/user/deleteUser';
@@ -84,7 +84,6 @@ export default function SettingsPage() {
             type="text"
             value={user.username}
             onChange={(e) => setUsername(e.target.value)}
-            // placeholder="Enter your username"
             className="w-full"
           />
           <Button className="mt-4">Update Username</Button>
@@ -110,14 +109,14 @@ export default function SettingsPage() {
             <Input
               value={contactSubject}
               onChange={(e) => setContactSubject(e.target.value)}
-              placeholder="Write your subject here"
+              placeholder="Subject"
               className="w-full"
             />
             <br />
             <Textarea
               value={contactMessage}
               onChange={(e) => setContactMessage(e.target.value)}
-              placeholder="Write your message here"
+              placeholder="Message"
               className="w-full"
               rows={4}
             />
@@ -146,7 +145,7 @@ export default function SettingsPage() {
             <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.137 21H7.863a2 2 0 01-1.996-1.858L5 7m5-3h4a2 2 0 012 2v1H8V6a2 2 0 012-2z" />
             </svg>
-            <span>Delete User</span>
+            <span>Remove Account</span>
           </>
         )}
       </Button>
