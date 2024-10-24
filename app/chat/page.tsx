@@ -4,12 +4,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import axios from '../utils/config/axiosConfig';
+import axios from '../utils/api/config/axiosConfig';
 import ChatSidebar from '@/components/ChatSideBar';
+import sendEmailConversation from '../utils/api/mail/sendEmailConversation';
 
 export default function ChatPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);  // Chat messages state
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());  // Track last interaction
@@ -53,12 +54,12 @@ export default function ChatPage() {
     }
   };
 
-  // Auto-save conversation after 10 minutes of inactivity
+  // Auto-save conversation after 3 minutes of inactivity
   useEffect(() => {
     const checkInactivity = () => {
-      const fiveMinutes = 5 * 60 * 1000;
-      if (Date.now() - lastInteractionTime >= fiveMinutes) {
-        saveConversation();  // Automatically save the conversation after 10 minutes
+      const threeMinutes = 3 * 60 * 1000;
+      if (Date.now() - lastInteractionTime >= threeMinutes) {
+        saveConversation();  // Automatically save the conversation after 3 minutes
       }
     };
 
@@ -88,28 +89,56 @@ export default function ChatPage() {
     }
   }, [messages]);
 
+  // Handle sending email conversation
+  const handleSendEmailConversation = () => {
+    const token = localStorage.getItem('authToken'); 
+    if (!token) {
+      console.log('email not sent - token error');
+      return;
+    } 
+    const conversationId = convers; // Replace with actual conversation ID
+    sendEmailConversation(conversationId, token);
+    console.log('conversation sent');
+  };
+
+  // Function to update the chat with the selected conversation
+  const handleConversationSelect = (conversation: any) => {
+    setMessages(conversation.messages);  // Update the messages with the selected conversation's messages
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Main flex container to align sidebar and chat area side by side */}
       <div className="flex">
         {/* Sidebar on the left */}
-        <ChatSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
+        <ChatSidebar 
+          sidebarOpen={sidebarOpen} 
+          setSidebarOpen={setSidebarOpen} 
+          onConversationSelect={handleConversationSelect}  // Pass the conversation select handler
+        />
+        
         {/* Chat area on the right */}
         <div className="flex-grow bg-card rounded-lg shadow-lg p-4 h-[600px] flex flex-col ml-4">
+        <div className='flex flex-row gap-8'>
           <h1 className="text-3xl font-bold mb-6">Chat with AI ChaTrip</h1>
+          <Button className="flex space-x-2" onClick={handleSendEmailConversation}>
+            Send Conversation
+          </Button>
+        </div>
           
+
           {/* Scroll area for messages */}
           <ScrollArea className="flex-grow mb-4" ref={scrollRef}>
             {messages.map((msg, index) => (
               <div key={index} className={`mb-4 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
                 <span className={`inline-block p-2 rounded-lg ${msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
-                  {msg.content}
+                  {msg.message}  {/* Display the message content instead of content */}
                 </span>
               </div>
             ))}
           </ScrollArea>
 
+          {/* Input area */}
           <div className="flex space-x-2">
             <Input
               value={input}
@@ -127,5 +156,3 @@ export default function ChatPage() {
     </div>
   );
 }
-
-
