@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { MapPin, Star, ExternalLink, Trash2 } from 'lucide-react'; // Import icons
-import checkToken from '../utils/config/checkToken';
+import checkToken from '../utils/api/config/checkToken';
 import getUserDetails from '../utils/api/user/getUserDetails';
 import jwt from "jsonwebtoken";
 import deleteSavingPlace from '../utils/api/places/deleteSavingPlace';
