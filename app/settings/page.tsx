@@ -74,63 +74,69 @@ export default function SettingsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <h1 className="text-4xl font-extrabold mb-8 text-gray-800">Settings</h1>
+  
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Username Section */}
-        <div className="bg-background p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-bold mb-4">Username</h2>
+        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Username</h2>
           <Input
             type="text"
             value={user.username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full"
+            className="w-full border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg"
+            placeholder="Update your username"
           />
-          <Button className="mt-4">Update Username</Button>
+          <Button className="mt-4 w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition duration-150">
+            Update Username
+          </Button>
         </div>
-
+  
         {/* Payment Settings Section */}
-        <div className="bg-background p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-bold mb-4">Payment Settings</h2>
+        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Payment Settings</h2>
           <Input
             type="text"
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value)}
             placeholder="Enter payment method (e.g., Credit Card)"
-            className="w-full"
+            className="w-full border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg"
           />
-          <Button className="mt-4">Update Payment Method</Button>
+          <Button className="mt-4 w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition duration-150">
+            Update Payment Method
+          </Button>
         </div>
-
+  
         {/* Contact Us Section */}
-        <div className="bg-background p-6 rounded-lg shadow-lg md:col-span-2">
-          <h2 className="text-xl font-bold mb-4">Contact Us</h2>
+        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 md:col-span-2">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Contact Us</h2>
           <form onSubmit={handleContactSubmit}>
             <Input
               value={contactSubject}
               onChange={(e) => setContactSubject(e.target.value)}
               placeholder="Subject"
-              className="w-full"
+              className="w-full border-gray-300 mb-4 focus:ring-blue-500 focus:border-blue-500 rounded-lg"
             />
-            <br />
             <Textarea
               value={contactMessage}
               onChange={(e) => setContactMessage(e.target.value)}
               placeholder="Message"
-              className="w-full"
+              className="w-full border-gray-300 mb-4 focus:ring-blue-500 focus:border-blue-500 rounded-lg"
               rows={4}
             />
-            <Button type="submit" className="mt-4" disabled={loading}>
+            <Button type="submit" className="w-full bg-green-500 text-white font-semibold py-2 rounded-lg hover:bg-green-600 transition duration-150" disabled={loading}>
               {loading ? 'Sending...' : 'Send Message'}
             </Button>
           </form>
         </div>
       </div>
+  
+      {/* Remove Account Button */}
       <Button
-        type="submit"
-        className="mt-6 flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out"
+        type="button"
+        className="mt-8 w-full md:w-auto bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:bg-red-700 transition-all duration-150 ease-in-out flex items-center justify-center space-x-2"
         onClick={handleUserDelete}
-        disabled={loading} // Disable when loading
+        disabled={loading}
       >
         {loading ? (
           <>
