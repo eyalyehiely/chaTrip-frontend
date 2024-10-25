@@ -34,7 +34,9 @@ export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-6">
-        {user?.username ? `Welcome ${user.username.split('@')[0]}` : 'Welcome'} to Your Tourist Guide
+        {user?.username
+          ? `Welcome ${(user.username.split('@')[0].charAt(0).toUpperCase() + user.username.split('@')[0].slice(1))}`
+          : 'Welcome'} to Your Tourist Guide
       </h1>
 
       <p className="text-xl mb-8">

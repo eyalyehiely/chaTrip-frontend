@@ -50,7 +50,7 @@ export default function Header() {
     <div className='flex'>
       {/* Sidebar component - pass the sidebarOpen state */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
+      
       <header className="bg-background border-b flex-1">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold">ChaTrip</Link>
@@ -69,7 +69,9 @@ export default function Header() {
                   variant="outline" 
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                 >
-                  {user?.username?.split('@')[0] || 'User'}
+                  {(user?.username?.split('@')[0] || 'User')
+                    .charAt(0)
+                    .toUpperCase() + (user?.username?.split('@')[0] || 'User').slice(1)}
                 </Button>
 
                 {dropdownOpen && (
