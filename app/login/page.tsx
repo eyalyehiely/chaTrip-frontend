@@ -50,42 +50,88 @@ export default function LoginPage() {
     }
   };
 
+  // const handleVerifyOtp = async (event: React.FormEvent) => {
+  //   event.preventDefault();
+  //   setMessage({ type: '', content: '' }); // Reset message
+
+  //   // Basic validation
+  //   if (!email) {
+  //     setMessage({ type: 'error', content: 'Please enter your email address.' });
+  //     return;
+  //   }
+
+  //   if (!otp) {
+  //     setMessage({ type: 'error', content: 'Please enter the OTP sent to your email.' });
+  //     return;
+  //   }
+
+  //   setLoading(true);
+
+  //   try {
+  //     const data = await verifyOtp(email, otp);
+  //     setMessage({ type: 'success', content: data.detail || 'Verification successful!' });
+  //     console.log('Verification successful:', data.status);
+      
+  //   } catch (error: any) {
+  //     // Parse the error message
+  //     if (error.message.startsWith('Error')) {
+  //       const parsed = parseErrorMessage(error.message);
+  //       setMessage({ type: 'error', content: parsed });
+  //     } else {
+  //       setMessage({ type: 'error', content: error.message });
+  //     }
+  //     console.error('Error verifying OTP:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
   const handleVerifyOtp = async (event: React.FormEvent) => {
     event.preventDefault();
     setMessage({ type: '', content: '' }); // Reset message
-
+  
     // Basic validation
     if (!email) {
       setMessage({ type: 'error', content: 'Please enter your email address.' });
       return;
     }
-
+  
     if (!otp) {
       setMessage({ type: 'error', content: 'Please enter the OTP sent to your email.' });
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
       const data = await verifyOtp(email, otp);
-      setMessage({ type: 'success', content: data.detail || 'Verification successful!' });
-      console.log('Verification successful:', data.status);
-      
-    } catch (error: any) {
-      // Parse the error message
-      if (error.message.startsWith('Error')) {
-        const parsed = parseErrorMessage(error.message);
-        setMessage({ type: 'error', content: parsed });
+      if (data.success) {
+        setMessage({ type: 'success', content: data.data.detail || 'Verification successful!' });
+        // Redirect to the dashboard or another protected route
+        router.push('/');
       } else {
-        setMessage({ type: 'error', content: error.message });
+        // Handle specific backend error messages
+        const errorDetail = data.data.detail;
+        if (errorDetail.includes("OTP has expired")) {
+          setMessage({ type: 'error', content: 'Your OTP has expired. Please request a new one.' });
+        } else if (errorDetail.includes("Invalid OTP")) {
+          setMessage({ type: 'error', content: 'Invalid OTP entered. Please check and try again.' });
+        } else if (errorDetail.includes("Maximum OTP attempts exceeded")) {
+          setMessage({ type: 'error', content: 'Maximum OTP attempts exceeded. Please request a new OTP.' });
+        } else {
+          setMessage({ type: 'error', content: errorDetail || 'Verification failed.' });
+        }
       }
+    } catch (error) {
+      const parsed = parseErrorMessage(error.message);
+      setMessage({ type: 'error', content: parsed || 'An unexpected error occurred. Please try again.' });
       console.error('Error verifying OTP:', error);
     } finally {
       setLoading(false);
     }
   };
-
+  
   const handleResendOtp = async () => {
     if (!email) {
       setMessage({ type: 'error', content: 'Please enter your email address to resend OTP.' });
