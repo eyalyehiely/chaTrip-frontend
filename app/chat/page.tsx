@@ -3,14 +3,14 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Mail,Menu } from 'lucide-react'; // Import icons
+import { Send, Menu, Smile } from 'lucide-react'; // Import icons
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from '../utils/api/config/axiosConfig';
 import ChatSidebar from '@/components/ChatSideBar';
 import sendEmailConversation from '../utils/api/mail/sendEmailConversation';
 import swal from 'sweetalert2';
-
+import EmojiPicker from 'emoji-picker-react'; // Import the emoji picker
 
 export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,7 +19,22 @@ export default function ChatPage() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());  // Track last interaction
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Toggle emoji picker visibility
+  const emojiPickerRef = useRef(null);  // Reference for emoji picker container
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef(null); // Reference for the input field
+
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);  // Close the emoji picker if clicked outside
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Reset inactivity timer on new messages
   const resetInactivityTimer = () => {
@@ -34,7 +49,7 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
-    resetInactivityTimer();  // Reset inactivity timer on sending a message
+    resetInactivityTimer();
 
     try {
       const token = localStorage.getItem('authToken');
@@ -49,7 +64,7 @@ export default function ChatPage() {
 
       const botMessage = { role: 'assistant', message: response.data.ai_message };
       setMessages((prev) => [...prev, botMessage]);
-      resetInactivityTimer();  // Reset inactivity timer on receiving a message
+      resetInactivityTimer();
 
     } catch (error) {
       const errorMessage = { role: 'assistant', message: 'Error connecting to the AI. Please try again later.' };
@@ -62,14 +77,14 @@ export default function ChatPage() {
   // Auto-save conversation after 3 minutes of inactivity
   useEffect(() => {
     const checkInactivity = () => {
-      const threeMinutes = 1* 60 * 1000;
+      const threeMinutes = 1 * 60 * 1000;
       if (Date.now() - lastInteractionTime >= threeMinutes) {
-        saveConversation();  // Automatically save the conversation after 3 minutes
+        saveConversation();
       }
     };
 
-    const interval = setInterval(checkInactivity, 60000);  // Check every minute
-    return () => clearInterval(interval);  // Clear interval on component unmount
+    const interval = setInterval(checkInactivity, 60000);
+    return () => clearInterval(interval);
   }, [lastInteractionTime]);
 
   // Function to save the conversation
@@ -107,21 +122,29 @@ export default function ChatPage() {
         title: 'Email not sent',
         text: 'No conversation selected.',
         icon: 'error',
-        confirmButtonText: 'OK',  // Correct SweetAlert2 option
+        confirmButtonText: 'OK',
       });
       console.log('email not sent - no conversation selected');
       return;
     }
     
-    // Pass the conversation ID
     sendEmailConversation(selectedConversationId, token);
     console.log('conversation sent');
   };
 
   // Function to update the chat with the selected conversation
-  const handleConversationSelect = (conversation: any) => {
-    setMessages(conversation.messages);  // Update the messages with the selected conversation's messages
-    setSelectedConversationId(conversation.id);  // Set the conversation ID
+  const handleConversationSelect = (conversation) => {
+    setMessages(conversation.messages);
+    setSelectedConversationId(conversation.id);
+  };
+
+  // Function to handle emoji selection
+  // Function to handle emoji selection
+  const handleEmojiClick = (emoji) => {
+    if (emoji) {
+      setInput((prevInput) => prevInput + emoji.emoji);  // Append selected emoji to input
+      inputRef.current?.focus(); // Refocus on the input field after emoji selection
+    }
   };
 
   return (
@@ -132,24 +155,21 @@ export default function ChatPage() {
         <ChatSidebar 
           sidebarOpen={sidebarOpen} 
           setSidebarOpen={setSidebarOpen} 
-          onConversationSelect={handleConversationSelect}  // Pass the conversation select handler
+          onConversationSelect={handleConversationSelect}
         />
         
         {/* Chat area on the right */}
         <div className="flex-grow bg-card rounded-lg shadow-lg p-4 h-[600px] flex flex-col ml-4">
-          <div className='flex flex-row gap-8'>
-            <h1 className="text-3xl font-bold mb-6">Chat with AI ChaTrip</h1>
-            <div className='flex flex-row ml-9'>
+          <div className='flex flex-row justify-between items-center mb-6'>
+            <h1 className="text-3xl font-bold">Chat with AI ChaTrip</h1>
+            <div className='flex space-x-2'>
               <Button className="flex space-x-2" onClick={handleSendEmailConversation}>
-                <Mail className='mr-2'/>
-                Send Conversation
+                <Send />
               </Button>
-              {/* <span> {conversation.timestamp|| 'no data'}</span> */}
               <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
-                  <Menu />
-                </Button>
+                <Menu />
+              </Button>
             </div>
-            
           </div>
           
           {/* Scroll area for messages */}
@@ -157,15 +177,27 @@ export default function ChatPage() {
             {messages.map((msg, index) => (
               <div key={index} className={`mb-4 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
                 <span className={`inline-block p-2 rounded-lg ${msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
-                  {msg.message}  {/* Display the message content */}
+                  {msg.message}
                 </span>
               </div>
             ))}
           </ScrollArea>
 
           {/* Input area */}
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 relative">
+            <Button variant="ghost" size="icon" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+              <Smile />
+            </Button>
+
+            {/* Emoji Picker */}
+            {showEmojiPicker && (
+              <div ref={emojiPickerRef} className="absolute bottom-16 z-50">
+                <EmojiPicker onEmojiClick={handleEmojiClick} />
+              </div>
+            )}
+
             <Input
+              ref={inputRef} // Reference the input field
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about tourist attractions..."
