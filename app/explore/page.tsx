@@ -164,6 +164,11 @@ export default function ExplorePage() {
             </div>
           )}
         </div>
+
+        <Button onClick={getUserLocation}>
+          <MapPin className='mr-2'/>
+          Refresh location 
+        </Button>
       </div>
 
       {loading && <p>Loading places...</p>}
