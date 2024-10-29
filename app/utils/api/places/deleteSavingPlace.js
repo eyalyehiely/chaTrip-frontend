@@ -13,7 +13,6 @@ export default async function deleteSavingPlace(token, user, setUser, placeId) {
       confirmButtonText: "Yes, delete it!"
     }).then(async (result) => {
       if (result.isConfirmed) {
-        // Make sure you're sending the correct API request
         const response = await axios.delete(`/auth/user/${user.id}/place/${placeId}/`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -22,7 +21,6 @@ export default async function deleteSavingPlace(token, user, setUser, placeId) {
 
         if (response.status === 200) {
           Swal.fire("Deleted!", "Place has been deleted.", "success");
-          // Update the user's saved places by filtering out the deleted place
           setUser((prevUser) => ({
             ...prevUser,
             saving_places: prevUser.saving_places.filter(place => place.id !== placeId)

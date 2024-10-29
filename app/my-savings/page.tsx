@@ -60,6 +60,7 @@ export default function SavingsPage() {
 
   // Handle delete functionality (removes saved item)
   const handleDelete = async (placeId) => {
+    
     console.log("Deleting place with id:", placeId); // Debug log
     if (token && placeId) {
       // Call the deleteSavingPlace function, passing the token, user, and placeId
