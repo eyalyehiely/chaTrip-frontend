@@ -200,7 +200,7 @@ export default function ExplorePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p>Type: {place.type || 'No description available'}</p>
+                  <p>Type: {place.type[0] || 'No description available'}</p>
                   <div className="mt-4 flex space-x-4">
                     <Button variant="outline" onClick={() => handleSavePlace(place)}>
                       <Bookmark className="mr-2 h-4 w-4" />
