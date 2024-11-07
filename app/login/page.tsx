@@ -1,5 +1,3 @@
-// LoginPage.tsx
-
 "use client";
 
 import React, { useState } from 'react';
@@ -36,56 +34,18 @@ export default function LoginPage() {
       setMessage({ type: 'success', content: data.detail || 'OTP sent successfully to your email.' });
       console.log('OTP sent:', data);
       setStep('otp'); // Move to OTP verification step
-    } catch (error: any) {
-      // Parse the error message
-      if (error.message.startsWith('Error')) {
+    } catch (error) {
+      if (error instanceof Error) {
         const parsed = parseErrorMessage(error.message);
         setMessage({ type: 'error', content: parsed });
       } else {
-        setMessage({ type: 'error', content: error.message });
+        setMessage({ type: 'error', content: 'An unexpected error occurred. Please try again.' });
       }
       console.error('Error sending OTP:', error);
     } finally {
       setLoading(false);
     }
   };
-
-  // const handleVerifyOtp = async (event: React.FormEvent) => {
-  //   event.preventDefault();
-  //   setMessage({ type: '', content: '' }); // Reset message
-
-  //   // Basic validation
-  //   if (!email) {
-  //     setMessage({ type: 'error', content: 'Please enter your email address.' });
-  //     return;
-  //   }
-
-  //   if (!otp) {
-  //     setMessage({ type: 'error', content: 'Please enter the OTP sent to your email.' });
-  //     return;
-  //   }
-
-  //   setLoading(true);
-
-  //   try {
-  //     const data = await verifyOtp(email, otp);
-  //     setMessage({ type: 'success', content: data.detail || 'Verification successful!' });
-  //     console.log('Verification successful:', data.status);
-      
-  //   } catch (error: any) {
-  //     // Parse the error message
-  //     if (error.message.startsWith('Error')) {
-  //       const parsed = parseErrorMessage(error.message);
-  //       setMessage({ type: 'error', content: parsed });
-  //     } else {
-  //       setMessage({ type: 'error', content: error.message });
-  //     }
-  //     console.error('Error verifying OTP:', error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
 
   const handleVerifyOtp = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -124,14 +84,18 @@ export default function LoginPage() {
         }
       }
     } catch (error) {
-      const parsed = parseErrorMessage(error.message);
-      setMessage({ type: 'error', content: parsed || 'An unexpected error occurred. Please try again.' });
+      if (error instanceof Error) {
+        const parsed = parseErrorMessage(error.message);
+        setMessage({ type: 'error', content: parsed || 'An unexpected error occurred. Please try again.' });
+      } else {
+        setMessage({ type: 'error', content: 'An unexpected error occurred. Please try again.' });
+      }
       console.error('Error verifying OTP:', error);
     } finally {
       setLoading(false);
     }
   };
-  
+
   const handleResendOtp = async () => {
     if (!email) {
       setMessage({ type: 'error', content: 'Please enter your email address to resend OTP.' });
@@ -145,12 +109,12 @@ export default function LoginPage() {
       const data = await sendOtp(email);
       setMessage({ type: 'success', content: data.detail || 'OTP resent successfully to your email.' });
       console.log('OTP resent:', data);
-    } catch (error: any) {
-      if (error.message.startsWith('Error')) {
+    } catch (error) {
+      if (error instanceof Error) {
         const parsed = parseErrorMessage(error.message);
         setMessage({ type: 'error', content: parsed });
       } else {
-        setMessage({ type: 'error', content: error.message });
+        setMessage({ type: 'error', content: 'An unexpected error occurred. Please try again.' });
       }
       console.error('Error resending OTP:', error);
     } finally {
@@ -241,14 +205,6 @@ export default function LoginPage() {
                 Resend OTP
               </Button>
             )}
-            {/* <div className="flex justify-between w-full">
-              <Button variant="outline" className="w-[48%]" disabled={loading}>
-                Google
-              </Button>
-              <Button variant="outline" className="w-[48%]" disabled={loading}>
-                Apple
-              </Button>
-            </div> */}
           </CardFooter>
         </form>
       </Card>

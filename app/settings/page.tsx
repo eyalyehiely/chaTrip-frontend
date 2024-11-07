@@ -1,33 +1,36 @@
 "use client";
 
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import checkToken from '../utils/api/config/checkToken';
-import getUserDetails from '../utils/api/user/getUserDetails'
-import jwt from "jsonwebtoken"; 
+import getUserDetails from '../utils/api/user/getUserDetails';
+import jwt, { JwtPayload } from "jsonwebtoken"; 
 import deleteUser from '../utils/api/user/deleteUser';
-import sendContactUsMail from '../utils/api/mail/sendContactUsMail'
+import sendContactUsMail from '../utils/api/mail/sendContactUsMail';
 
+interface DecodedToken extends JwtPayload {
+  user_id?: string;
+}
 
 export default function SettingsPage() {
-  checkToken()
+  checkToken();
   const [username, setUsername] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [contactMessage, setContactMessage] = useState('');
-  const [contactSubject, setContactSubject] =useState('');
+  const [contactSubject, setContactSubject] = useState('');
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState({}); // Initial state as null for better handling
+  const [user, setUser] = useState<{ username?: string }>({});
 
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
     if (storedToken) {
       setToken(storedToken);
       
-      // Decode token using jsonwebtoken
-      const decodedToken = jwt.decode(storedToken); // Decode without verification
+      // Decode token using jsonwebtoken and cast as DecodedToken
+      const decodedToken = jwt.decode(storedToken) as DecodedToken; // Decode without verification
       const user_id = decodedToken?.user_id;
 
       // Fetch user details using decoded user_id
@@ -37,13 +40,12 @@ export default function SettingsPage() {
     }
   }, []);
 
-
-  // Handle form submission (this could be an API call)
-  const handleContactSubmit = async (e) => {
+  // Handle form submission (e.g., sending a contact message)
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      sendContactUsMail(contactMessage,contactSubject, token)
+      await sendContactUsMail(contactMessage, contactSubject, token);
       console.log('Message sent:', contactMessage, 'subject', contactSubject);
     } catch (error) {
       console.error('Error sending message:', error);
@@ -52,25 +54,26 @@ export default function SettingsPage() {
     }
   };
 
-  const handleUserDelete = async (e) => {
-    e.preventDefault();
+  const handleUserDelete = async () => {
     setLoading(true);
     try {
-      const storedToken = localStorage.getItem('authToken');
-      if (token){
-      const decodedToken = jwt.decode(storedToken); // Decode without verification
-      const user_id = decodedToken?.user_id;
-      deleteUser(token, setUser, user_id)
-      console.log('User deleted');
-    }
-      } catch (error) {
-        console.error('Error deleting user:', error);
-        } finally {
-          setLoading(false);
-        }
-  }
+      if (token) {
+        const decodedToken = jwt.decode(token) as DecodedToken; // Decode without verification
+        const user_id = decodedToken?.user_id;
 
-  
+        if (user_id) {
+          await deleteUser(token, setUser, user_id);
+          console.log('User deleted');
+        } else {
+          console.error('User ID not found in token.');
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -82,7 +85,7 @@ export default function SettingsPage() {
           <h2 className="text-2xl font-semibold mb-4 text-gray-700">Username</h2>
           <Input
             type="text"
-            value={user.username}
+            value={user.username || ''}
             onChange={(e) => setUsername(e.target.value)}
             className="w-full border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg"
             placeholder="Update your username"

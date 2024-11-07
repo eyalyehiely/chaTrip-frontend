@@ -10,9 +10,9 @@ import FAQs from '@/components/Faqs'; // Import the FAQ component
 import checkToken from "./utils/api/config/checkToken";
 
 export default function Home() {
-  checkToken()
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  checkToken();
+  const [user, setUser] = useState<any>(null); // Use `any` or a custom type based on user structure
+  const [token, setToken] = useState<string | null>(null); // Allow `token` to be a string or `null`
 
   // useEffect for setting token and decoding
   useEffect(() => {
@@ -21,7 +21,7 @@ export default function Home() {
       setToken(storedToken);
       
       // Decode token using jsonwebtoken
-      const decodedToken = jwt.decode(storedToken);
+      const decodedToken = jwt.decode(storedToken) as { user_id?: string }; // Add type annotation for better type safety
       const user_id = decodedToken?.user_id;
 
       // Fetch user details using decoded user_id

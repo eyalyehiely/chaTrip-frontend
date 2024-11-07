@@ -20,18 +20,19 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
   const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());  // Track last interaction
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Toggle emoji picker visibility
-  const emojiPickerRef = useRef(null);  // Reference for emoji picker container
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef(null); // Reference for the input field
+  const inputRef = useRef<HTMLInputElement>(null);
+
 
   // Close emoji picker when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
         setShowEmojiPicker(false);  // Close the emoji picker if clicked outside
       }
     };
-
+  
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -133,14 +134,13 @@ export default function ChatPage() {
   };
 
   // Function to update the chat with the selected conversation
-  const handleConversationSelect = (conversation) => {
+  const handleConversationSelect = (conversation: any) => {
     setMessages(conversation.messages);
     setSelectedConversationId(conversation.id);
   };
 
   // Function to handle emoji selection
-  // Function to handle emoji selection
-  const handleEmojiClick = (emoji) => {
+  const handleEmojiClick = (emoji: any) => {
     if (emoji) {
       setInput((prevInput) => prevInput + emoji.emoji);  // Append selected emoji to input
       inputRef.current?.focus(); // Refocus on the input field after emoji selection

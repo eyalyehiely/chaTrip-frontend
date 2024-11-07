@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -19,20 +18,37 @@ const categories = [
 
 const radii = [1000, 3000, 5000]; // Radius options in meters (1km, 3km, 5km)
 
+interface Location {
+  latitude: number;
+  longitude: number;
+}
+
+interface Place {
+  id: string;
+  name: string;
+  distance?: string;
+  rating?: number;
+  opening_hours?: boolean | null;
+  type?: string[];
+  location?: {
+    lat: number;
+    lng: number;
+  };
+}
+
 export default function ExplorePage() {
-  checkToken();
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedRadius, setSelectedRadius] = useState(3000); // Default to 3km radius
-  const [places, setPlaces] = useState([]);
-  const [userLocation, setUserLocation] = useState(null);  // Store user's location
-  const [loading, setLoading] = useState(false);  // Handle loading state
-  const [error, setError] = useState(null);  // Handle errors
-  const [dropdownOpen, setDropdownOpen] = useState(false);  // Manage dropdown open/close state
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedRadius, setSelectedRadius] = useState<number>(3000); // Default to 3km radius
+  const [places, setPlaces] = useState<Place[]>([]);
+  const [userLocation, setUserLocation] = useState<Location | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);  // Handle loading state
+  const [error, setError] = useState<string | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);  // Manage dropdown open/close state
   const [token, setToken] = useState<string | null>(null);  // Store the token from localStorage
 
-  // Retrieve token from localStorage when component loads
+  // Retrieve token from localStorage when the component loads
   useEffect(() => {
-    const storedToken = localStorage.getItem('authToken');
+    const storedToken = checkToken();
     if (storedToken) {
       setToken(storedToken);
     } else {
@@ -106,15 +122,15 @@ export default function ExplorePage() {
   };
 
   // Handle saving a place
-  const handleSavePlace = async (place) => {
+  const handleSavePlace = async (place: Place) => {
     try {
-      const storedToken = localStorage.getItem('authToken');
-      const decodedToken = jwt.decode(storedToken) as any;
-      const user_id = decodedToken?.user_id; 
       if (!token) {
         setError('You must be logged in to save places.');
         return;
       }
+      
+      const decodedToken = jwt.decode(token) as any;
+      const user_id = decodedToken?.user_id;
 
       // Call the updateUserSavings function to save the place
       await updateUserSavings(token, place, user_id);
@@ -125,7 +141,7 @@ export default function ExplorePage() {
   };
 
   // Open location in Google Maps
-  const handleOpenLocation = (lat, lng) => {
+  const handleOpenLocation = (lat: number, lng: number) => {
     const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
     window.open(googleMapsUrl, '_blank');  // Opens the location in a new tab
   };
@@ -200,7 +216,7 @@ export default function ExplorePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p>Type: {place.type[0] || 'No description available'}</p>
+                  <p>Type: {place.type?.[0] || 'No description available'}</p>
                   <div className="mt-4 flex space-x-4">
                     <Button variant="outline" onClick={() => handleSavePlace(place)}>
                       <Bookmark className="mr-2 h-4 w-4" />
@@ -208,8 +224,12 @@ export default function ExplorePage() {
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => handleOpenLocation(place.location?.lat, place.location?.lng)}
-                      disabled={!place.location || !place.location.lat || !place.location.lng}  // Disable if location is missing
+                      onClick={() => {
+                        if (place.location?.lat !== undefined && place.location?.lng !== undefined) {
+                          handleOpenLocation(place.location.lat, place.location.lng);
+                        }
+                      }}
+                      disabled={!place.location || place.location.lat === undefined || place.location.lng === undefined}  // Disable if location is missing
                     >
                       <ExternalLink className="mr-2 h-4 w-4" />
                       Open Location

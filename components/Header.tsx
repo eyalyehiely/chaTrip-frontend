@@ -9,12 +9,17 @@ import getUserDetails from '../app/utils/api/user/getUserDetails';
 import jwt from "jsonwebtoken";
 import Sidebar from './Sidebar';
 
+interface UserData {
+  username?: string;
+  // Add other user properties if needed
+}
+
 export default function Header() {
   const { theme, setTheme } = useTheme();
   const [token, setToken] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);  // Sidebar default is closed
-  const [user, setUser] = useState<{ username?: string }>({});
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Sidebar default is closed
+  const [user, setUser] = useState<UserData>({});
   const [isTokenValid, setIsTokenValid] = useState(true);
 
   // Fetch token and user details
@@ -27,7 +32,7 @@ export default function Header() {
         const user_id = decodedToken?.user_id;
 
         if (user_id) {
-          getUserDetails(storedToken, (userData) => {
+          getUserDetails(storedToken, (userData: UserData) => {
             setUser(userData);
           }, user_id);
         }
@@ -118,13 +123,6 @@ export default function Header() {
             <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
               <Menu />
             </Button>
-
-            {/* {dropdownOpen && (
-              <div
-                className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-                onClick={() => setSidebarOpen(false)}
-              />
-            )} */}
           </div>
         </div>
       </header>

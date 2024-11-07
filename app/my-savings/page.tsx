@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -10,14 +9,30 @@ import getUserDetails from '../utils/api/user/getUserDetails';
 import jwt from "jsonwebtoken";
 import deleteSavingPlace from '../utils/api/places/deleteSavingPlace';
 
+interface Place {
+  id: string;
+  name: string;
+  distance?: string;
+  rating?: number;
+  opening_hours?: boolean | null;
+  location?: {
+    lat: number;
+    lng: number;
+  };
+}
+
+interface User {
+  saving_places: Place[];
+}
+
 export default function SavingsPage() {
   checkToken();
-  const [savings, setSavings] = useState([]); // State for saved items
-  const [filteredSavings, setFilteredSavings] = useState([]); // Filtered savings
+  const [savings, setSavings] = useState<Place[]>([]); // State for saved items
+  const [filteredSavings, setFilteredSavings] = useState<Place[]>([]); // Filtered savings
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [user, setUser] = useState({ saving_places: [] });
+  const [user, setUser] = useState<User>({ saving_places: [] });
 
   // Fetch the token and decode it
   useEffect(() => {
@@ -50,7 +65,7 @@ export default function SavingsPage() {
       const query = searchQuery.toLowerCase();
       setFilteredSavings(
         savings.filter((item) =>
-          item.name.toLowerCase().includes(query)
+          item.name?.toLowerCase().includes(query)
         )
       );
     } else {
@@ -59,8 +74,7 @@ export default function SavingsPage() {
   }, [searchQuery, savings]);
 
   // Handle delete functionality (removes saved item)
-  const handleDelete = async (placeId) => {
-    
+  const handleDelete = async (placeId: string) => {
     console.log("Deleting place with id:", placeId); // Debug log
     if (token && placeId) {
       // Call the deleteSavingPlace function, passing the token, user, and placeId
@@ -71,16 +85,16 @@ export default function SavingsPage() {
   };
 
   // Handle opening location in Google Maps
-  const handleGoogleOpenLocation = (lat, lng) => {
+  const handleGoogleOpenLocation = (lat: number, lng: number) => {
     const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
     window.open(googleMapsUrl, '_blank'); // Opens the location in a new tab
   };
 
   // Handle opening location in Apple Maps
-const handleAppleOpenLocation = (lat, lng) => {
-  const appleMapsUrl = `https://maps.apple.com/?ll=${lat},${lng}`;
-  window.open(appleMapsUrl, '_blank'); // Opens the location in a new tab
-};
+  const handleAppleOpenLocation = (lat: number, lng: number) => {
+    const appleMapsUrl = `https://maps.apple.com/?ll=${lat},${lng}`;
+    window.open(appleMapsUrl, '_blank'); // Opens the location in a new tab
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -127,22 +141,12 @@ const handleAppleOpenLocation = (lat, lng) => {
                 <div className="flex justify-between items-center">
                   <Button
                     variant="outline"
-                    onClick={() => handleGoogleOpenLocation(place.location?.lat, place.location?.lng)}
-                    disabled={!place.location || !place.location.lat || !place.location.lng} // Disable if location is missing
+                    onClick={() => handleGoogleOpenLocation(place.location?.lat!, place.location?.lng!)}
+                    disabled={!place.location || place.location.lat === undefined || place.location.lng === undefined} // Disable if location is missing
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
                     Open Location
                   </Button>
-                  
-
-                  {/* <Button
-                    variant="outline"
-                    onClick={() => handleAppleOpenLocation(place.location?.lat, place.location?.lng)}
-                    disabled={!place.location || !place.location.lat || !place.location.lng} // Disable if location is missing
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Open Location
-                  </Button> */}
                   <Button variant="destructive" size="sm" onClick={() => handleDelete(place.id)}>
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete
@@ -158,5 +162,3 @@ const handleAppleOpenLocation = (lat, lng) => {
     </div>
   );
 }
-
-
