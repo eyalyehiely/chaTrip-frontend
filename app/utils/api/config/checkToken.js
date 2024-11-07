@@ -13,7 +13,9 @@ export default function checkToken() {
         icon: "error",
         title: "Oops...",
         text: "Authentication token not found. Please log in.",
-        footer: '<a href="#">Why do I have this issue?</a>'
+        footer: '<a href="#">Why do I have this issue?</a>',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#e3342f',
       }).then(() => {
         // Redirect to /login after the alert is shown and acknowledged
         window.location.href = '/login';
