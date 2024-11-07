@@ -152,40 +152,62 @@ export default function ExplorePage() {
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      <div className="flex space-x-4 mb-8">
-        {categories.map((category) => (
+      <div className="flex flex-wrap space-y-4 mb-8">
+  {categories.map((category, index) => {
+    // Check if the current index is even to create pairs of two buttons per row
+    if (index % 2 === 0) {
+      return (
+        <div key={index} className="flex space-x-4 mb-4">
+          {/* Render the current button */}
           <Button
             key={category.name}
             onClick={() => handleCategoryClick(category.name)}
             variant={selectedCategory === category.name ? "default" : "outline"}
-            disabled={!userLocation || loading}  // Disable button if location is not available or while loading
+            disabled={!userLocation || loading}
           >
-            {React.createElement(category.icon, { className: "mr-2 h-4 w-4" })}  {/* Correctly render the icon */}
+            {React.createElement(category.icon, { className: "mr-2 h-4 w-4" })}
             {category.name}
           </Button>
-        ))}
 
-        {/* Dropdown for selecting radius */}
-        <div className="relative">
-          <Button variant="outline" onClick={() => setDropdownOpen(!dropdownOpen)}>
-            Radius: {selectedRadius / 1000} km
-          </Button>
-          {dropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md py-2">
-              {radii.map((radius) => (
-                <div key={radius} className="py-1 px-4 hover:bg-gray-200 cursor-pointer" onClick={() => handleRadiusSelection(radius)}>
-                  {radius / 1000} km
-                </div>
-              ))}
-            </div>
+          {/* Render the next button if it exists */}
+          {categories[index + 1] && (
+            <Button
+              key={categories[index + 1].name}
+              onClick={() => handleCategoryClick(categories[index + 1].name)}
+              variant={selectedCategory === categories[index + 1].name ? "default" : "outline"}
+              disabled={!userLocation || loading}
+            >
+              {React.createElement(categories[index + 1].icon, { className: "mr-2 h-4 w-4" })}
+              {categories[index + 1].name}
+            </Button>
           )}
         </div>
+      );
+    }
+    return null; // Return null for odd-indexed buttons that are paired with the previous one
+  })}
 
-        <Button onClick={getUserLocation}>
-          <MapPin className='mr-2'/>
-          Refresh location 
-        </Button>
+  {/* Dropdown for selecting radius */}
+  <div className="relative">
+    <Button variant="outline" onClick={() => setDropdownOpen(!dropdownOpen)}>
+      Radius: {selectedRadius / 1000} km
+    </Button>
+    {dropdownOpen && (
+      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md py-2">
+        {radii.map((radius) => (
+          <div key={radius} className="py-1 px-4 hover:bg-gray-200 cursor-pointer" onClick={() => handleRadiusSelection(radius)}>
+            {radius / 1000} km
+          </div>
+        ))}
       </div>
+    )}
+  </div>
+
+  <Button onClick={getUserLocation}>
+    <MapPin className='mr-2'/>
+    Refresh location 
+  </Button>
+</div>
 
       {loading && <p>Loading places...</p>}
 
