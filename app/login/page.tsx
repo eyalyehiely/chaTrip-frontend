@@ -143,7 +143,7 @@ export default function LoginPage() {
           <CardTitle>{step === 'email' ? 'Login' : 'Verify OTP'}</CardTitle>
           <CardDescription>
             {step === 'email'
-              ? 'Enter your email to receive an OTP.'
+              ? 'Enter your email to receive an OTP(One Time Password).'
               : 'Enter the OTP sent to your email to verify your account.'}
           </CardDescription>
         </CardHeader>
